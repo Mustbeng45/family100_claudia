@@ -1,0 +1,94 @@
+[
+  {
+    "question": "Kalo Claudia dikasih libur sehari full tanpa tugas, kira-kira Claudia bakal ngapain?",
+    "answers": [
+      {
+        "text": "Tidur",
+        "points": 35
+      },
+      {
+        "text": "Nonton Netflix",
+        "points": 20
+      },
+      {
+        "text": "Main sama Diego",
+        "points": 15
+      },
+      {
+        "text": "Cabut ngemall",
+        "points": 17
+      },
+      {
+        "text": "Baking",
+        "points": 13
+      }
+    ]
+  },
+  {
+    "question": "Kalo Claudia lagi bad mood, cara paling aman buat bikin dia happy adalah?",
+    "answers": [
+      {
+        "text": "Kasih yang dingin-dingin",
+        "points": 25
+      },
+      {
+        "text": "Kipas",
+        "points": 20
+      },
+      {
+        "text": "Ice cream",
+        "points": 15
+      },
+      {
+        "text": "Gummy bear",
+        "points": 21
+      },
+      {
+        "text": "Ajak makan Geybok",
+        "points": 14
+      }
+    ]
+  },
+  {
+    "question": "Kalo Claudia disuruh pilih satu hal buat dibawa ke pulau terpencil, Claudia bakal bawa apa?",
+    "answers": [
+      {
+        "text": "iPad",
+        "points": 37
+      },
+      {
+        "text": "Kaca",
+        "points": 20
+      },
+      {
+        "text": "Kipas",
+        "points": 13
+      },
+      {
+        "text": "Lippies",
+        "points": 15
+      },
+      {
+        "text": "Diego",
+        "points": 10
+      }
+    ]
+  },
+  {
+    "question": "Sebut satu hal yang paling bisa bikin Claudia langsung bad mood tanpa alasan jelas",
+    "answers": [
+      {
+        "text": "Panas",
+        "points": 45
+      },
+      {
+        "text": "Ga ada iPad",
+        "points": 30
+      },
+      {
+        "text": "Didiemin/dikacangin",
+        "points": 25
+      }
+    ]
+  }
+]
