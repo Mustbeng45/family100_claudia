@@ -53,8 +53,8 @@ if not st.session_state["questions"]:
     st.session_state["questions"] = qs
 
 # ----------------- UI -----------------
-st.title("🎉 Famili 100: Ulang Tahun Claudia")
-st.caption("Versi tanpa popup, highlight BENAR 2 detik 💚")
+st.title("🎉 Family100")
+st.caption("---")
 
 q = current_question()
 if not q:
@@ -174,4 +174,4 @@ with right:
                         reveal_answer(idx)
                         st.rerun()
 
-st.caption("Made with ❤️ untuk ulang tahun Claudia — tanpa popup, highlight 2 detik 💚")
+st.caption("Enlightenment @2025")
