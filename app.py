@@ -1,6 +1,5 @@
 import json
 import streamlit as st
-from typing import List, Dict, Any
 import time
 
 st.set_page_config(page_title="Famili 100 – Ulang Tahun Claudia", layout="wide")
@@ -13,7 +12,8 @@ def init_state():
         "questions": [],
         "trigger": None,
         "last_revealed": None,
-        "popup_time": 0
+        "popup_time": 0,
+        "highlight_start": None  # waktu mulai highlight
     }
     for k, v in defaults.items():
         if k not in st.session_state:
@@ -32,6 +32,7 @@ def next_question():
         st.session_state["revealed"].clear()
         st.session_state["trigger"] = None
         st.session_state["last_revealed"] = None
+        st.session_state["highlight_start"] = None
 
 
 def prev_question():
@@ -40,10 +41,13 @@ def prev_question():
         st.session_state["revealed"].clear()
         st.session_state["trigger"] = None
         st.session_state["last_revealed"] = None
+        st.session_state["highlight_start"] = None
 
 
 def reveal_answer(index: int):
     st.session_state["revealed"].add(index)
+    st.session_state["last_revealed"] = index
+    st.session_state["highlight_start"] = time.time()
 
 
 # ----------------- INIT -----------------
@@ -61,7 +65,7 @@ if not st.session_state["questions"]:
 
 # ----------------- UI -----------------
 st.title("🎉 Famili 100: Ulang Tahun Claudia")
-st.caption("Versi lengkap: highlight, popup, dan tombol tampilkan jawaban 💚💥")
+st.caption("Efek highlight hijau 2 detik 💚 kemudian kembali normal")
 
 q = current_question()
 if not q:
@@ -85,11 +89,8 @@ with col_left:
         found = False
         for i, a in enumerate(q["answers"]):
             if g.strip().lower() == a["text"].lower():
-                if i not in st.session_state["revealed"]:
-                    st.session_state["revealed"].add(i)
-                    st.session_state["last_revealed"] = i
-                    st.session_state["trigger"] = "correct"
-                    st.success(f"✅ Benar! {a['text']} ({a['points']} poin)")
+                reveal_answer(i)
+                st.success(f"✅ Benar! {a['text']} ({a['points']} poin)")
                 found = True
                 break
         if not found:
@@ -115,6 +116,9 @@ with col_right:
     grid_cols = 2
     rows = (len(answers) + grid_cols - 1) // grid_cols
 
+    now = time.time()
+    highlight_duration = 2  # detik
+
     for r in range(rows):
         cols = st.columns(grid_cols)
         for c_idx, c in enumerate(cols):
@@ -124,12 +128,24 @@ with col_right:
                 is_revealed = idx in st.session_state["revealed"]
                 is_new = idx == st.session_state["last_revealed"]
 
-                border = "limegreen" if is_revealed else "#ccc"
-                bg = "#b6ffb3" if is_revealed else "#f9f9f9"
-                text_color = "black" if is_revealed else "#333"
-                extra_effect = (
+                # cek apakah highlight masih aktif
+                highlight_active = (
+                    is_new and st.session_state["highlight_start"] is not None and
+                    now - st.session_state["highlight_start"] < highlight_duration
+                )
+
+                # jika sudah lebih dari 2 detik, hapus highlight
+                if is_new and st.session_state["highlight_start"] is not None and now - st.session_state["highlight_start"] >= highlight_duration:
+                    st.session_state["last_revealed"] = None
+                    st.session_state["highlight_start"] = None
+                    st.rerun()
+
+                border = "limegreen" if highlight_active else "#ccc"
+                bg = "#b6ffb3" if highlight_active else "#f9f9f9"
+                text_color = "black" if highlight_active else "#333"
+                glow = (
                     "box-shadow: 0 0 60px 20px limegreen; animation: pulse 1.2s ease-in-out;"
-                    if is_new else ""
+                    if highlight_active else ""
                 )
 
                 with c:
@@ -143,7 +159,7 @@ with col_right:
                         color: {text_color};
                         font-weight: bold;
                         transition: all 0.3s ease;
-                        {extra_effect}
+                        {glow}
                     ">
                         <h3>#{idx + 1}</h3>
                         {"<h2>" + ans['text'] + " — <b>" + str(ans['points']) + " poin</b></h2>" if is_revealed else "<h2 style='color:#888;'>❌ Belum Terbuka</h2>"}
@@ -157,11 +173,11 @@ with col_right:
                     </style>
                     """, unsafe_allow_html=True)
 
-                    # Tombol tampilkan satu per satu
                     if not is_revealed:
                         if st.button(f"👀 Tampilkan #{idx + 1}", key=f"show_{idx}"):
                             reveal_answer(idx)
                             st.rerun()
+
 
 # ----------------- POPUP SALAH -----------------
 def popup_salah():
@@ -209,4 +225,4 @@ if st.session_state["trigger"] == "wrong":
     popup_salah()
     st.session_state["trigger"] = None
 
-st.caption("Made with ❤️ untuk ulang tahun Claudia — versi lengkap dengan tombol tampilkan jawaban 💚💥")
+st.caption("Made with ❤️ untuk ulang tahun Claudia — highlight hijau hanya 2 detik 💚")
