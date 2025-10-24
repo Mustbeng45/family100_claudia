@@ -19,10 +19,12 @@ def init_state():
         if k not in st.session_state:
             st.session_state[k] = v
 
+
 def current_question():
     if not st.session_state["questions"]:
         return {}
     return st.session_state["questions"][st.session_state["q_index"]]
+
 
 def next_question():
     if st.session_state["q_index"] < len(st.session_state["questions"]) - 1:
@@ -31,12 +33,18 @@ def next_question():
         st.session_state["trigger"] = None
         st.session_state["last_revealed"] = None
 
+
 def prev_question():
     if st.session_state["q_index"] > 0:
         st.session_state["q_index"] -= 1
         st.session_state["revealed"].clear()
         st.session_state["trigger"] = None
         st.session_state["last_revealed"] = None
+
+
+def reveal_answer(index: int):
+    st.session_state["revealed"].add(index)
+
 
 # ----------------- INIT -----------------
 init_state()
@@ -50,9 +58,10 @@ except FileNotFoundError:
 if not st.session_state["questions"]:
     st.session_state["questions"] = qs
 
+
 # ----------------- UI -----------------
 st.title("🎉 Famili 100: Ulang Tahun Claudia")
-st.caption("Highlight permanen semua jawaban benar + efek pulse untuk jawaban baru 💚💥")
+st.caption("Versi lengkap: highlight, popup, dan tombol tampilkan jawaban 💚💥")
 
 q = current_question()
 if not q:
@@ -115,7 +124,6 @@ with col_right:
                 is_revealed = idx in st.session_state["revealed"]
                 is_new = idx == st.session_state["last_revealed"]
 
-                # Warna dasar & efek highlight
                 border = "limegreen" if is_revealed else "#ccc"
                 bg = "#b6ffb3" if is_revealed else "#f9f9f9"
                 text_color = "black" if is_revealed else "#333"
@@ -148,6 +156,12 @@ with col_right:
                     }}
                     </style>
                     """, unsafe_allow_html=True)
+
+                    # Tombol tampilkan satu per satu
+                    if not is_revealed:
+                        if st.button(f"👀 Tampilkan #{idx + 1}", key=f"show_{idx}"):
+                            reveal_answer(idx)
+                            st.rerun()
 
 # ----------------- POPUP SALAH -----------------
 def popup_salah():
@@ -190,8 +204,9 @@ def popup_salah():
     </style>
     """, unsafe_allow_html=True)
 
+
 if st.session_state["trigger"] == "wrong":
     popup_salah()
     st.session_state["trigger"] = None
 
-st.caption("Made with ❤️ untuk ulang tahun Claudia — highlight permanen & animasi pulse baru 💚💥")
+st.caption("Made with ❤️ untuk ulang tahun Claudia — versi lengkap dengan tombol tampilkan jawaban 💚💥")
