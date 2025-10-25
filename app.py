@@ -11,7 +11,8 @@ def init_state():
         "revealed": set(),
         "questions": [],
         "last_revealed": None,
-        "highlight_start": None
+        "highlight_start": None,
+        "show_wrong_popup": False,  # ⬅️ tambahan: flag popup SALAH
     }
     for k, v in defaults.items():
         if k not in st.session_state:
@@ -28,6 +29,7 @@ def next_question():
         st.session_state["revealed"].clear()
         st.session_state["last_revealed"] = None
         st.session_state["highlight_start"] = None
+        st.session_state["show_wrong_popup"] = False
 
 def prev_question():
     if st.session_state["q_index"] > 0:
@@ -35,6 +37,7 @@ def prev_question():
         st.session_state["revealed"].clear()
         st.session_state["last_revealed"] = None
         st.session_state["highlight_start"] = None
+        st.session_state["show_wrong_popup"] = False
 
 def reveal_answer(idx: int):
     st.session_state["revealed"].add(idx)
@@ -83,6 +86,8 @@ with left:
                 found = True
                 break
         if not found:
+            # tampilkan popup salah 2 detik
+            st.session_state["show_wrong_popup"] = True
             st.info("❌ Belum tepat, coba lagi!")
 
     st.divider()
@@ -173,5 +178,44 @@ with right:
                     if st.button(f"👀 Tampilkan #{idx + 1}", key=f"show_{idx}"):
                         reveal_answer(idx)
                         st.rerun()
+
+# ----------------- POPUP SALAH (full screen 2 detik) -----------------
+if st.session_state["show_wrong_popup"]:
+    st.markdown("""
+    <div id="popup-wrong" style="
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        background: rgba(255,0,0,0.85);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        animation: fadeZoom 2s ease-out forwards;
+    ">
+        <h1 style="
+            font-size: 200px;
+            color: white;
+            text-shadow: 0 0 60px #ff0000, 0 0 120px #ff0000;
+            font-weight: 900;
+            font-family: 'Arial Black', sans-serif;
+        ">SALAH!!! 💥</h1>
+    </div>
+    <script>
+        setTimeout(function() {{
+            const el = document.getElementById('popup-wrong');
+            if (el) el.remove();
+        }}, 2000);
+    </script>
+    <style>
+    @keyframes fadeZoom {{
+        0% {{opacity: 0; transform: scale(0.5);}}
+        20% {{opacity: 1; transform: scale(1.1);}}
+        80% {{opacity: 1; transform: scale(1);}}
+        100% {{opacity: 0; transform: scale(1.2);}}
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+    st.session_state["show_wrong_popup"] = False  # reset supaya gak stuck
 
 st.caption("Enlightenment @2025")
